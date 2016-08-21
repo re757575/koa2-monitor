@@ -1,10 +1,11 @@
 'use strict'
 
-const fs = require('fs')
+const fs = require('mz/fs')
 const path = require('path')
 const os = require('os')
-const onHeaders = require('on-headers')
+const send = require('koa-send')
 const pidusage = require('pidusage')
+const handlebars = require('handlebars')
 let io
 
 const defaultConfig = {
@@ -42,7 +43,7 @@ const gatherOsMetrics = (io, span) => {
     stat.timestamp = Date.now()
 
     span.os.push(stat)
-    if (!span.responses[0] || last(span.responses)().timestamp + (span.interval * 1000) < Date.now()) span.responses.push(defaultResponse)
+    if (!span.responses[0] || last(span.responses).timestamp + (span.interval * 1000) < Date.now()) span.responses.push(defaultResponse)
 
     if (span.os.length >= span.retention) span.os.shift()
     if (span.responses[0] && span.responses.length > span.retention) span.responses.shift()
@@ -60,7 +61,9 @@ const sendMetrics = (span) => {
   })
 }
 
-const middlewareWrapper = (config) => {
+const middlewareWrapper = (app, config) => {
+  io = require('socket.io')(app)
+
   if (config === null || config === undefined) {
     config = defaultConfig
   }
@@ -72,55 +75,57 @@ const middlewareWrapper = (config) => {
   if (config.spans === undefined || !config instanceof Array) {
     config.spans = defaultConfig.spans
   }
+  const indexHtml = fs.readFileSync('index.html', {'encoding': 'utf8'})
+  const template = handlebars.compile(indexHtml)
 
-  return (req, res, next) => {
-    if (io === null || io === undefined) {
-      io =
+  io.on('connection', (socket) => {
+    socket.emit('start', config.spans)
+    socket.on('change', function () {
+      socket.emit('start', config.spans)
+    })
+  })
 
-      io.on('connection', (socket) => {
-        socket.emit('start', config.spans)
-        socket.on('change', function () {
-          socket.emit('start', config.spans)
-        })
-      })
+  config.spans.forEach((span) => {
+    span.os = []
+    span.responses = []
+    setInterval(() => gatherOsMetrics(io, span), span.interval * 1000)
+  })
+  // console.log(config)
+
+  return function*(next) {
+    const startTime = process.hrtime()
+    console.log('path ', this.path)
+
+    if (this.path === config.path) {
+      console.log(this.path)
+      this.body = template(config)
+    } else if (this.url === `${config.path}/koa-monitor-frontend.js`) {
+      yield send(this, 'koa-monitor-frontend.js')
+    } else {
+      yield next
+
+      const diff = process.hrtime(startTime)
+      const responseTime = diff[0] * 1e3 + diff[1] * 1e-6
+      const category = Math.floor(this.statusCode / 100)
 
       config.spans.forEach((span) => {
-        span.os = []
-        span.responses = []
-        setInterval(() => gatherOsMetrics(io, span), span.interval * 1000)
+        const lastResponse = last(span.responses)
+        if (lastResponse && lastResponse.timestamp / 1000 + span.interval > Date.now() / 1000) {
+          lastResponse[category]++
+          lastResponse.count++
+          lastResponse.mean = lastResponse.mean + ((responseTime - lastResponse.mean) / lastResponse.count)
+        } else {
+          span.responses.push({
+            '2': category === 2 ? 1 : 0,
+            '3': category === 3 ? 1 : 0,
+            '4': category === 4 ? 1 : 0,
+            '5': category === 5 ? 1 : 0,
+            count: 1,
+            mean: responseTime,
+            timestamp: Date.now()
+          })
+        }
       })
-    }
-
-    const startTime = process.hrtime()
-    if (req.path === config.path) {
-      res.sendFile(path.join(__dirname, 'index.html'))
-    } else {
-      onHeaders(res, () => {
-        const diff = process.hrtime(startTime)
-        const responseTime = diff[0] * 1e3 + diff[1] * 1e-6
-        const category = Math.floor(res.statusCode / 100)
-
-        config.spans.forEach((span) => {
-          const lastResponse = last(span.responses)
-          if (lastResponse && lastResponse().timestamp / 1000 + span.interval > Date.now() / 1000) {
-            lastResponse()[category]++
-            lastResponse().count++
-            lastResponse().mean = lastResponse().mean + ((responseTime - lastResponse().mean) / lastResponse().count)
-          } else {
-            span.responses.push({
-              '2': category === 2 ? 1 : 0,
-              '3': category === 3 ? 1 : 0,
-              '4': category === 4 ? 1 : 0,
-              '5': category === 5 ? 1 : 0,
-              count: 1,
-              mean: responseTime,
-              timestamp: Date.now()
-            })
-          }
-        })
-      })
-
-      next()
     }
   }
 }

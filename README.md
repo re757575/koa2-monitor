@@ -1,19 +1,22 @@
-### Issues with HTTPS (including Heroku) has been resolved, module is working again
-# express-status-monitor
-Simple, self-hosted module based on Socket.io and Chart.js to report realtime server metrics for Express-based node servers. More Node frameworks coming soon.
+# koa-monitor
+Simple, self-hosted module based on Socket.io and Chart.js to report realtime server metrics for koa.js-based node servers.
 
 ![Monitoring Page](http://i.imgur.com/AHizEWq.gif "Monitoring Page")
 
 ## Installation & setup
-1. Run `npm install express-status-monitor --save`
-2. Before any other middleware or router add following line: 
-`app.use(require('express-status-monitor')());`
+1. Run `npm install koa-monitor --save`
+2. Before any other middleware add following line:
+```javascript
+const monitor = require('koa-monitor')
+// then after
+app.use(monitor(server, {path: '/status'}))
+```
 3. Run server and go to `/status`
 
 ## Options
 
-Monitor can be configured by passing options object into `expressMonitor` constructor.
- 
+Monitor can be configured by passing options(second argument) object into `monitor` constructor.
+
 Default config:
 ```
 path: '/status',
@@ -30,6 +33,10 @@ spans: [{
 
 ```
 
+For an example koa server, check out `sample/server.js'
+
 ## License
 
-[MIT License](https://opensource.org/licenses/MIT) © Rafal Wilinski
+[MIT License](https://opensource.org/licenses/MIT) © Jiří Špác
+
+Forked from [express-status-monitor](https://github.com/RafalWilinski/express-status-monitor)
