@@ -7,9 +7,14 @@ const send = require('koa-send')
 const pidusage = require('pidusage')
 const handlebars = require('handlebars')
 let io
+let appName
+try {
+  appName = require('../../package.json').name
+} catch (err) {}
 
 const defaultConfig = {
   path: '/status',
+  title: appName,
   spans: [{
     interval: 1,
     retention: 60
@@ -63,18 +68,8 @@ const sendMetrics = (span) => {
 
 const middlewareWrapper = (app, config) => {
   io = require('socket.io')(app)
-
-  if (config === null || config === undefined) {
-    config = defaultConfig
-  }
-
-  if (config.path === undefined || !config instanceof String) {
-    config.path = defaultConfig.path
-  }
-
-  if (config.spans === undefined || !config instanceof Array) {
-    config.spans = defaultConfig.spans
-  }
+  Object.assign(defaultConfig, config)
+  config = defaultConfig
   const indexHtml = fs.readFileSync('index.html', {'encoding': 'utf8'})
   const template = handlebars.compile(indexHtml)
 

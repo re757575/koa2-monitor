@@ -1,7 +1,7 @@
 {
   "name": "koa-monitor",
-  "version": "0.1.0",
-  "description": "Monitoring for koa-based Node applications",
+  "version": "0.1.1",
+  "description": "Realtime monitoring for koa-based Node applications",
   "main": "index.js",
   "keywords": [
     "node",
@@ -12,6 +12,10 @@
   ],
   "author": "Jiri Spac capajj@gmail.com",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/capaj/koa-monitor.git"
+  },
   "dependencies": {
     "handlebars": "^4.0.5",
     "koa-send": "^3.2.0",
