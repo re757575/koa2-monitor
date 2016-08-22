@@ -42,6 +42,15 @@ const gatherOsMetrics = (io, span) => {
     timestamp: Date.now()
   }
 
+  const sendMetrics = (span) => {
+    io.emit('stats', {
+      os: span.os[span.os.length - 2],
+      responses: span.responses[span.responses.length - 2],
+      interval: span.interval,
+      retention: span.retention
+    })
+  }
+
   pidusage.stat(process.pid, (err, stat) => {
     stat.memory = stat.memory / 1024 / 1024 // Convert from B to MB
     stat.load = os.loadavg()
@@ -57,20 +66,12 @@ const gatherOsMetrics = (io, span) => {
   })
 }
 
-const sendMetrics = (span) => {
-  io.emit('stats', {
-    os: span.os[span.os.length - 2],
-    responses: span.responses[span.responses.length - 2],
-    interval: span.interval,
-    retention: span.retention
-  })
-}
-
 const middlewareWrapper = (app, config) => {
   io = require('socket.io')(app)
   Object.assign(defaultConfig, config)
   config = defaultConfig
-  const indexHtml = fs.readFileSync('index.html', {'encoding': 'utf8'})
+  const statusHtmlPage = config.statusHtmlPage || 'node_modules/koa-monitor/index.html'
+  const indexHtml = fs.readFileSync(statusHtmlPage, {'encoding': 'utf8'})
   const template = handlebars.compile(indexHtml)
 
   io.on('connection', (socket) => {
