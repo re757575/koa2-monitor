@@ -1,6 +1,6 @@
 {
   "name": "koa-monitor",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Realtime monitoring for koa-based Node applications",
   "main": "index.js",
   "keywords": [
@@ -18,7 +18,6 @@
   },
   "dependencies": {
     "handlebars": "^4.0.5",
-    "koa-send": "^3.2.0",
     "mz": "^2.4.0",
     "pidusage": "^1.0.4",
     "socket.io": "^1.4.8"

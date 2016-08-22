@@ -3,7 +3,6 @@
 const fs = require('mz/fs')
 const path = require('path')
 const os = require('os')
-const send = require('koa-send')
 const pidusage = require('pidusage')
 const handlebars = require('handlebars')
 let io
@@ -66,12 +65,14 @@ const gatherOsMetrics = (io, span) => {
   })
 }
 
+const encoding = {encoding: 'utf8'}
+
 const middlewareWrapper = (app, config) => {
   io = require('socket.io')(app)
   Object.assign(defaultConfig, config)
   config = defaultConfig
-  const statusHtmlPage = config.statusHtmlPage || 'node_modules/koa-monitor/index.html'
-  const indexHtml = fs.readFileSync(statusHtmlPage, {'encoding': 'utf8'})
+  const htmlFilePath = path.join(__dirname, 'index.html')
+  const indexHtml = fs.readFileSync(htmlFilePath, encoding)
   const template = handlebars.compile(indexHtml)
 
   io.on('connection', (socket) => {
@@ -94,7 +95,8 @@ const middlewareWrapper = (app, config) => {
     if (this.path === config.path) {
       this.body = template(config)
     } else if (this.url === `${config.path}/koa-monitor-frontend.js`) {
-      yield send(this, 'node_modules/koa-monitor/koa-monitor-frontend.js')
+      const pathToJs = path.join(__dirname, 'koa-monitor-frontend.js')
+      this.body = yield fs.readFile(pathToJs, encoding)
     } else {
       yield next
 
