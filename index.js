@@ -96,7 +96,7 @@ const middlewareWrapper = (app, config) => {
       console.log(this.path)
       this.body = template(config)
     } else if (this.url === `${config.path}/koa-monitor-frontend.js`) {
-      yield send(this, 'koa-monitor-frontend.js')
+      yield send(this, 'node_modules/koa-monitor/koa-monitor-frontend.js')
     } else {
       yield next
 
