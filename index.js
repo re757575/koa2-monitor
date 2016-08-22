@@ -90,10 +90,8 @@ const middlewareWrapper = (app, config) => {
 
   return function*(next) {
     const startTime = process.hrtime()
-    console.log('path ', this.path)
 
     if (this.path === config.path) {
-      console.log(this.path)
       this.body = template(config)
     } else if (this.url === `${config.path}/koa-monitor-frontend.js`) {
       yield send(this, 'node_modules/koa-monitor/koa-monitor-frontend.js')
