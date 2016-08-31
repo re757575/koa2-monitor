@@ -175,9 +175,11 @@ socket.on('stats', function (data) {
     responseTimeChart.data.labels.push(data.responses.timestamp)
 
     var deltaTime = data.responses.timestamp - rpsChart.data.labels[rpsChart.data.labels.length - 1]
-    rpsStat.textContent = (data.responses.count / deltaTime * 1000).toFixed(2)
-    rpsChart.data.datasets[0].data.push(data.responses.count / deltaTime * 1000)
-    rpsChart.data.labels.push(data.responses.timestamp)
+    if (deltaTime > 0) {
+      rpsStat.textContent = (data.responses.count / deltaTime * 1000).toFixed(2)
+      rpsChart.data.datasets[0].data.push(data.responses.count / deltaTime * 1000)
+      rpsChart.data.labels.push(data.responses.timestamp)
+    }
 
     charts.forEach(function (chart) {
       if (spans[defaultSpan].retention < chart.data.labels.length) {

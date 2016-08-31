@@ -1,6 +1,6 @@
 {
   "name": "koa-monitor",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Realtime monitoring for koa-based Node applications",
   "main": "index.js",
   "keywords": [
@@ -10,6 +10,9 @@
     "koa",
     "charts"
   ],
+  "engines" : {
+    "node" : ">=4"
+  },
   "author": "Jiri Spac capajj@gmail.com",
   "license": "MIT",
   "repository": {
@@ -19,11 +22,11 @@
   "dependencies": {
     "handlebars": "^4.0.5",
     "mz": "^2.4.0",
-    "pidusage": "^1.0.4",
+    "pidusage": "^1.0.5",
     "socket.io": "^1.4.8"
   },
   "devDependencies": {
-    "koa": "^1.2.1",
-    "standard": "^8.0.0-beta.5"
+    "koa": "^1.2.2",
+    "standard": "^8.0.0"
   }
 }
