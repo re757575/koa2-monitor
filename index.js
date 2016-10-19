@@ -106,11 +106,24 @@ const middlewareWrapper = (app, config) => {
       const pathToJs = path.join(__dirname, 'koa-monitor-frontend.js')
       this.body = yield fs.readFile(pathToJs, encoding)
     } else {
+      let timer
+      if (config.timeout) {
+        timer = setTimeout(() => {
+          record.call(this, true);
+        }, config.timeout)
+      }
+
       yield next
 
+      timer && clearTimeout(timer)
+      record.call(this)
+    }
+
+    function record(timeout) {
       const diff = process.hrtime(startTime)
       const responseTime = diff[0] * 1e3 + diff[1] * 1e-6
-      const category = Math.floor(this.statusCode / 100)
+      //if timeout, set response code to 5xx.
+      const category = timeout ? 5 : Math.floor(this.statusCode / 100)
 
       config.spans.forEach((span) => {
         const lastResponse = last(span.responses)
