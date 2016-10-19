@@ -1,3 +1,4 @@
+/* global Chart, location, io */
 Chart.defaults.global.defaultFontSize = 8
 Chart.defaults.global.animation.duration = 500
 Chart.defaults.global.legend.display = false

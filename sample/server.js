@@ -6,7 +6,7 @@ app.use(monitor(server, {path: '/status', statusHtmlPage: 'index.html'}))
 
 app.use(function *() {
   if (this.path === '/') {
-    this.body = 'Hello World';
+    this.body = 'Hello World'
   }
 })
 
