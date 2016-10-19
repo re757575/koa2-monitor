@@ -51,6 +51,10 @@ const gatherOsMetrics = (io, span) => {
   }
 
   pidusage.stat(process.pid, (err, stat) => {
+    if (err) {
+      console.error(err)
+      return
+    }
     stat.memory = stat.memory / 1024 / 1024 // Convert from B to MB
     stat.load = os.loadavg()
     stat.timestamp = Date.now()
