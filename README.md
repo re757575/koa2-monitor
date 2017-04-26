@@ -1,5 +1,7 @@
 # koa2-monitor
 
+[![Build Status](https://travis-ci.org/dvoaviarison/koa2-monitor.svg?branch=master)](https://travis-ci.org/dvoaviarison/koa2-monitor)
+
 Simple, self-hosted module based on Socket.io and Chart.js to report realtime server metrics for koa@2.js-based node servers.
 
 ![Monitoring Page](http://i.imgur.com/AHizEWq.gif "Monitoring Page")
