@@ -13,6 +13,7 @@ try {
 
 const defaultConfig = {
   path: '/status',
+  port: 3003,
   title: appName,
   spans: [{
     interval: 1,
@@ -71,11 +72,8 @@ const gatherOsMetrics = (io, span) => {
 
 const encoding = {encoding: 'utf8'}
 
-const middlewareWrapper = (app, config) => {
-  if (!app.listen) {
-    throw new Error('First parameter must be an http server')
-  }
-  io = require('socket.io')(app)
+const middlewareWrapper = (config) => {
+  io = require('socket.io')(config.port)
   Object.assign(defaultConfig, config)
   config = defaultConfig
   const htmlFilePath = path.join(__dirname, 'index.html')
@@ -104,7 +102,7 @@ const middlewareWrapper = (app, config) => {
       this.body = template(config)
     } else if (this.url === `${config.path}/koa-monitor-frontend.js`) {
       const pathToJs = path.join(__dirname, 'koa-monitor-frontend.js')
-      this.body = yield fs.readFile(pathToJs, encoding)
+      this.body = (yield fs.readFile(pathToJs, encoding)).replace('"SOCKET_PORT"', config.port)
     } else {
       let timer
       if (config.requestTimeout) {

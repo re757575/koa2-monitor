@@ -6,7 +6,8 @@ Chart.defaults.global.elements.line.backgroundColor = 'rgba(0,0,0,0)'
 Chart.defaults.global.elements.line.borderColor = 'rgba(0,0,0,0.9)'
 Chart.defaults.global.elements.line.borderWidth = 2
 
-var socket = io(location.protocol + '//' + location.hostname + ':' + location.port)
+var host = location.protocol + '//' + location.hostname + ':' + "SOCKET_PORT";
+var socket = io(host)
 var defaultSpan = 0
 var spans = []
 
