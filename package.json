@@ -1,6 +1,6 @@
 {
   "name": "koa2-monitor",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Realtime monitoring for koa2-based Node applications",
   "main": "index.js",
   "keywords": [

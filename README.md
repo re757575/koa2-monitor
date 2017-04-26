@@ -8,7 +8,7 @@ Simple, self-hosted module based on Socket.io and Chart.js to report realtime se
 1. Run `npm install koa2-monitor --save`
 2. Before any other middleware add following line:
 ```javascript
-const monitor = require('koa-monitor')
+const monitor = require('koa2-monitor')
 // then after
 app.use(monitor({path: '/status', port: 3003}))
 ```
