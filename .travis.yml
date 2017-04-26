@@ -1,3 +1,13 @@
 language: node_js
-node_js:
-- 'stable'
+node-js:
+  - "stable"
+
+deploy:
+  provider: npm
+  email: $NPM_MAIL
+  api_key: $NPM_TOKEN
+  on:
+    all_branches: true
+
+notifications:
+  slack: $SLACK_TOKEN
