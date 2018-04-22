@@ -95,14 +95,14 @@ const middlewareWrapper = (config) => {
   })
   // console.log(config)
 
-  return function*(next) {
+  return async (ctx, next) => {
     const startTime = process.hrtime()
 
-    if (this.path === config.path) {
-      this.body = template(config)
-    } else if (this.url === `${config.path}/koa-monitor-frontend.js`) {
+    if (ctx.path === config.path) {
+      ctx.body = template(config)
+    } else if (ctx.url === `${config.path}/koa-monitor-frontend.js`) {
       const pathToJs = path.join(__dirname, 'koa-monitor-frontend.js')
-      this.body = (yield fs.readFile(pathToJs, encoding)).replace('"SOCKET_PORT"', config.port)
+      ctx.body = (await fs.readFile(pathToJs, encoding)).replace('"SOCKET_PORT"', config.port)
     } else {
       let timer
       if (config.requestTimeout) {
@@ -111,17 +111,17 @@ const middlewareWrapper = (config) => {
         }, config.requestTimeout)
       }
 
-      yield next
+      await next();
 
       timer && clearTimeout(timer)
-      record.call(this)
+      record.call(ctx)
     }
 
     function record (timeout) {
       const diff = process.hrtime(startTime)
       const responseTime = diff[0] * 1e3 + diff[1] * 1e-6
       // if timeout, set response code to 5xx.
-      const category = timeout ? 5 : Math.floor(this.statusCode / 100)
+      const category = timeout ? 5 : Math.floor(ctx.statusCode / 100)
 
       config.spans.forEach((span) => {
         const lastResponse = last(span.responses)
