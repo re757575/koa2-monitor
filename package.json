@@ -1,6 +1,6 @@
 {
   "name": "koa2-monitor",
-  "version": "0.1.2",
+  "version": "0.1.0",
   "description": "Realtime monitoring for koa2-based Node applications",
   "main": "index.js",
   "keywords": [
@@ -11,16 +11,16 @@
     "charts"
   ],
   "engines": {
-    "node": ">=4"
+    "node": ">=8"
   },
   "scripts": {
     "test": "standard"
   },
-  "author": "daniel.voaviarison@gmail.com",
+  "author": "re757575@gmail.com",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/dvoaviarison/koa2-monitor.git"
+    "url": "https://github.com/re757575/koa2-monitor.git"
   },
   "dependencies": {
     "handlebars": "^4.0.5",
@@ -29,7 +29,7 @@
     "socket.io": "^1.5.0"
   },
   "devDependencies": {
-    "koa": "^2.2.0",
+    "koa": "^2.5.0",
     "standard": "^8.0.0"
   }
 }

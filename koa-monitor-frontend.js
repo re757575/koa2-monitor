@@ -7,7 +7,9 @@ Chart.defaults.global.elements.line.borderColor = 'rgba(0,0,0,0.9)'
 Chart.defaults.global.elements.line.borderWidth = 2
 
 var host = location.protocol + '//' + location.hostname + ':' + "SOCKET_PORT";
-var socket = io(host)
+var socket = io(host, {
+  transports: ['websocket']
+})
 var defaultSpan = 0
 var spans = []
 
@@ -193,3 +195,7 @@ socket.on('stats', function (data) {
     })
   }
 })
+
+socket.on('reconnect_attempt', () => {
+  socket.io.opts.transports = ['polling', 'websocket'];
+});
